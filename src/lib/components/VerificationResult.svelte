@@ -12,7 +12,7 @@
 	const config = $derived({
 		title: isValid ? 'Proof Verified' : 'Verification Failed',
 		description: isValid
-			? 'The prover knows a valid solution without revealing it'
+			? 'The prover knows a valid solution'
 			: 'The proof does not match this puzzle'
 	});
 </script>

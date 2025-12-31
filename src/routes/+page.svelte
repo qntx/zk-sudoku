@@ -85,6 +85,7 @@
 	};
 
 	const handlePuzzleUpload = (content: string): void => {
+		verificationResult = null;
 		const parsed = parseGrid(content);
 		if (!parsed) {
 			updateStatus('Invalid puzzle file', 'error');
@@ -108,6 +109,7 @@
 	};
 
 	const handleProofUpload = (content: string): void => {
+		verificationResult = null;
 		const parsed = parseProof(content);
 		if (!parsed) {
 			updateStatus('Invalid proof file', 'error');
