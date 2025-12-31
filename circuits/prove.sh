@@ -8,9 +8,6 @@ CIRCUIT="sudoku"
 BUILD="build"
 INPUT=${1:-"input.json"}
 
-echo -e "\n=== Sudoku ZK Proof Generation ==="
-echo -e "Input: $INPUT\n"
-
 # 1. Generate witness (use snarkjs to avoid ESM/CommonJS conflict)
 echo "[1/3] Computing witness..."
 snarkjs wtns calculate "$BUILD/${CIRCUIT}_js/$CIRCUIT.wasm" "$INPUT" "$BUILD/witness.wtns"
@@ -27,5 +24,4 @@ snarkjs groth16 verify "$BUILD/verification_key.json" "$BUILD/public.json" "$BUI
 # Cleanup
 rm -f "$BUILD/witness.wtns"
 
-echo -e "\n=== Proof Generated ==="
 echo "Output: $BUILD/proof.json, $BUILD/public.json"

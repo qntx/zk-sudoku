@@ -9,8 +9,6 @@ BUILD="build"
 PTAU="powersOfTau28_hez_final_14.ptau"
 PTAU_URL="https://storage.googleapis.com/zkevm/ptau/$PTAU"
 
-echo -e "\n=== Sudoku ZK Circuit Compilation ===\n"
-
 mkdir -p "$BUILD"
 
 # 1. Compile circuit
@@ -21,7 +19,7 @@ circom "$CIRCUIT.circom" --r1cs --wasm --sym -o "$BUILD"
 echo "[2/5] Circuit info:"
 snarkjs r1cs info "$BUILD/$CIRCUIT.r1cs"
 
-# 3. Download Powers of Tau
+# 3. Powers of Tau
 if [ -f "$BUILD/$PTAU" ]; then
     echo "[3/5] Powers of Tau exists, skipping..."
 else
@@ -29,7 +27,7 @@ else
     curl -L -o "$BUILD/$PTAU" "$PTAU_URL"
 fi
 
-# 4. Generate zkey (Groth16)
+# 4. Groth16 setup
 echo "[4/5] Generating proving key..."
 snarkjs groth16 setup "$BUILD/$CIRCUIT.r1cs" "$BUILD/$PTAU" "$BUILD/${CIRCUIT}_0000.zkey"
 snarkjs zkey contribute "$BUILD/${CIRCUIT}_0000.zkey" "$BUILD/${CIRCUIT}_final.zkey" \
@@ -40,7 +38,6 @@ rm -f "$BUILD/${CIRCUIT}_0000.zkey"
 echo "[5/5] Exporting verification key..."
 snarkjs zkey export verificationkey "$BUILD/${CIRCUIT}_final.zkey" "$BUILD/verification_key.json"
 
-echo -e "\n=== Build Complete ==="
 cat << EOF
 Output in $BUILD/:
   - $CIRCUIT.r1cs          (constraints)

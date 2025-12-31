@@ -1,64 +1,52 @@
 <#
 .SYNOPSIS
-    Compiles Sudoku ZK circuit and generates proving/verification keys.
-.DESCRIPTION
-    1. Compile circom circuit to R1CS + WASM
-    2. Download Powers of Tau (if needed)
-    3. Generate Groth16 proving key
-    4. Export verification key
+    Compiles Sudoku ZK circuit and generates Groth16 proving/verification keys.
 .EXAMPLE
     .\compile.ps1
 #>
 
 $ErrorActionPreference = "Stop"
 
-# Configuration
 $Circuit = "sudoku"
-$BuildDir = "build"
-$PtauFile = "powersOfTau28_hez_final_14.ptau"
-$PtauUrl = "https://storage.googleapis.com/zkevm/ptau/$PtauFile"
+$Build = "build"
+$Ptau = "powersOfTau28_hez_final_14.ptau"
 
-function Write-Step($step, $msg) { Write-Host "[$step] $msg" -ForegroundColor Yellow }
-function Write-Done($msg) { Write-Host $msg -ForegroundColor Green }
+function Step($n, $msg) { Write-Host "[$n] $msg" -ForegroundColor Yellow }
 
-Write-Host "`n=== Sudoku ZK Circuit Compilation ===`n" -ForegroundColor Cyan
+New-Item -ItemType Directory -Path $Build -Force | Out-Null
 
-# Setup
-New-Item -ItemType Directory -Path $BuildDir -Force | Out-Null
-
-# 1. Compile circuit
-Write-Step "1/5" "Compiling circuit..."
-.\circom.exe "$Circuit.circom" --r1cs --wasm --sym -o $BuildDir
-
-# 2. Circuit info
-Write-Step "2/5" "Circuit info:"
-snarkjs r1cs info "$BuildDir/$Circuit.r1cs"
-
-# 3. Download Powers of Tau
-$ptauPath = "$BuildDir/$PtauFile"
-if (Test-Path $ptauPath) {
-    Write-Step "3/5" "Powers of Tau exists, skipping..."
+# 1. circom compiler
+if (Test-Path ".\circom.exe") {
+    Step "1/5" "circom.exe exists"
 } else {
-    Write-Step "3/5" "Downloading Powers of Tau..."
-    Invoke-WebRequest -Uri $PtauUrl -OutFile $ptauPath
+    Step "1/5" "Downloading circom..."
+    $ver = (Invoke-RestMethod "https://api.github.com/repos/iden3/circom/releases/latest").tag_name
+    Invoke-WebRequest "https://github.com/iden3/circom/releases/download/$ver/circom-windows-amd64.exe" -OutFile ".\circom.exe"
+    Write-Host "  circom $ver" -ForegroundColor DarkGray
 }
 
-# 4. Generate zkey (Groth16)
-Write-Step "4/5" "Generating proving key..."
-snarkjs groth16 setup "$BuildDir/$Circuit.r1cs" $ptauPath "$BuildDir/${Circuit}_0000.zkey"
-snarkjs zkey contribute "$BuildDir/${Circuit}_0000.zkey" "$BuildDir/${Circuit}_final.zkey" `
-    --name="dev" -v -e="$(Get-Random)"
-Remove-Item "$BuildDir/${Circuit}_0000.zkey" -ErrorAction SilentlyContinue
+# 2. Compile circuit
+Step "2/5" "Compiling circuit..."
+.\circom.exe "$Circuit.circom" --r1cs --wasm --sym -o $Build
+snarkjs r1cs info "$Build/$Circuit.r1cs"
+
+# 3. Powers of Tau
+$ptauPath = "$Build/$Ptau"
+if (Test-Path $ptauPath) {
+    Step "3/5" "Powers of Tau exists"
+} else {
+    Step "3/5" "Downloading Powers of Tau..."
+    Invoke-WebRequest "https://storage.googleapis.com/zkevm/ptau/$Ptau" -OutFile $ptauPath
+}
+
+# 4. Groth16 setup
+Step "4/5" "Generating proving key..."
+snarkjs groth16 setup "$Build/$Circuit.r1cs" $ptauPath "$Build/${Circuit}_0.zkey"
+snarkjs zkey contribute "$Build/${Circuit}_0.zkey" "$Build/${Circuit}_final.zkey" --name="dev" -v -e="$(Get-Random)"
+Remove-Item "$Build/${Circuit}_0.zkey" -ErrorAction SilentlyContinue
 
 # 5. Export verification key
-Write-Step "5/5" "Exporting verification key..."
-snarkjs zkey export verificationkey "$BuildDir/${Circuit}_final.zkey" "$BuildDir/verification_key.json"
+Step "5/5" "Exporting verification key..."
+snarkjs zkey export verificationkey "$Build/${Circuit}_final.zkey" "$Build/verification_key.json"
 
-Write-Done "`n=== Build Complete ==="
-Write-Host @"
-Output in $BuildDir/:
-  - $Circuit.r1cs          (constraints)
-  - ${Circuit}_js/         (WASM prover)
-  - ${Circuit}_final.zkey  (proving key)
-  - verification_key.json  (verification key)
-"@
+Write-Host "Output: $Build/{$Circuit.r1cs, ${Circuit}_js/, ${Circuit}_final.zkey, verification_key.json}"

@@ -16,10 +16,6 @@ $Circuit = "sudoku"
 $BuildDir = "build"
 
 function Write-Step($step, $msg) { Write-Host "[$step] $msg" -ForegroundColor Yellow }
-function Write-Done($msg) { Write-Host $msg -ForegroundColor Green }
-
-Write-Host "`n=== Sudoku ZK Proof Generation ===" -ForegroundColor Cyan
-Write-Host "Input: $InputFile`n"
 
 # 1. Generate witness (use snarkjs to avoid ESM/CommonJS conflict)
 Write-Step "1/3" "Computing witness..."
@@ -37,5 +33,4 @@ snarkjs groth16 verify "$BuildDir/verification_key.json" "$BuildDir/public.json"
 # Cleanup
 Remove-Item "$BuildDir/witness.wtns" -ErrorAction SilentlyContinue
 
-Write-Done "`n=== Proof Generated ==="
 Write-Host "Output: $BuildDir/proof.json, $BuildDir/public.json"
