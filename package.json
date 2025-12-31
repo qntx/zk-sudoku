@@ -1,6 +1,6 @@
 {
 	"name": "zk-sodo",
-	"version": "0.1.0",
+	"version": "0.3.0",
 	"devDependencies": {
 		"@eslint/compat": "^1.4.0",
 		"@eslint/js": "^9.39.1",
