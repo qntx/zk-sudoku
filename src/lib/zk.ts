@@ -4,7 +4,11 @@ declare const snarkjs: SnarkJS;
 
 interface Groth16Protocol {
 	fullProve(input: ProofInput, wasmPath: string, zkeyPath: string): Promise<ProofResult>;
-	verify(verificationKey: VerificationKey, publicSignals: string[], proof: ZkProof): Promise<boolean>;
+	verify(
+		verificationKey: VerificationKey,
+		publicSignals: string[],
+		proof: ZkProof
+	): Promise<boolean>;
 }
 
 interface ProofInput {
@@ -56,10 +60,18 @@ const loadVerificationKey = (): Promise<VerificationKey> =>
 	}));
 
 const isValidZkProof = (value: unknown): value is ZkProof =>
-	value !== null && typeof value === 'object' && 'pi_a' in value && 'pi_b' in value && 'pi_c' in value;
+	value !== null &&
+	typeof value === 'object' &&
+	'pi_a' in value &&
+	'pi_b' in value &&
+	'pi_c' in value;
 
 export const generateProof = async (puzzle: SudokuGrid, solution: SudokuGrid): Promise<ZkProof> => {
-	const { proof } = await snarkjs.groth16.fullProve({ puzzle, solution }, ZK_ASSETS.WASM, ZK_ASSETS.ZKEY);
+	const { proof } = await snarkjs.groth16.fullProve(
+		{ puzzle, solution },
+		ZK_ASSETS.WASM,
+		ZK_ASSETS.ZKEY
+	);
 	return proof;
 };
 

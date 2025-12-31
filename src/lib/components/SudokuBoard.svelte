@@ -87,22 +87,22 @@
 
 <style>
 	.board-wrapper {
-		background: linear-gradient(145deg, #f8fafc, #f1f5f9);
-		border-radius: 20px;
+		animation: scaleIn var(--duration-slow) var(--ease-out);
+		background: linear-gradient(145deg, var(--color-slate-50), var(--color-slate-100));
+		border-radius: var(--radius-2xl);
 		box-shadow:
-			0 4px 6px -1px rgba(0, 0, 0, 0.05),
-			0 10px 15px -3px rgba(0, 0, 0, 0.08),
-			0 20px 25px -5px rgba(0, 0, 0, 0.05);
+			var(--shadow-lg),
+			0 0 0 1px var(--color-slate-200);
 		max-width: 540px;
-		padding: 1rem;
+		padding: var(--space-4);
 		width: 100%;
 	}
 
 	.board {
 		aspect-ratio: 1;
-		background: #ffffff;
-		border: 2px solid #334155;
-		border-radius: 12px;
+		background: white;
+		border: 2px solid var(--color-slate-700);
+		border-radius: var(--radius-lg);
 		display: grid;
 		grid-template-columns: repeat(9, 1fr);
 		overflow: hidden;
@@ -112,73 +112,85 @@
 	.cell {
 		align-items: center;
 		aspect-ratio: 1;
-		background: #ffffff;
-		border: 1px solid #e2e8f0;
+		background: white;
+		border: 1px solid var(--color-slate-200);
 		display: flex;
 		justify-content: center;
-		transition: all 0.15s ease;
+		position: relative;
+		transition: background var(--duration-fast) var(--ease-out);
 	}
 
 	.cell:hover {
-		background: #f8fafc;
+		background: var(--color-slate-50);
 	}
 
 	.box-bottom {
-		border-bottom: 2px solid #475569;
+		border-bottom: 2px solid var(--color-slate-600);
 	}
 
 	.box-right {
-		border-right: 2px solid #475569;
+		border-right: 2px solid var(--color-slate-600);
 	}
 
 	.given {
-		background: #f1f5f9;
+		background: var(--color-slate-100);
+	}
+
+	.given:hover {
+		background: var(--color-slate-100);
 	}
 
 	.given .cell-value {
-		color: #1e293b;
+		color: var(--color-slate-800);
 		font-weight: 700;
 	}
 
 	.solved .cell-input,
 	.solved .cell-value {
-		color: #059669;
+		color: var(--color-success-600);
 		font-weight: 600;
 	}
 
 	.user-input .cell-input,
 	.user-input .cell-value {
-		color: #4f46e5;
-		font-weight: 500;
+		color: var(--color-primary-600);
+		font-weight: 600;
 	}
 
 	.cell-value {
-		color: #475569;
-		font-size: clamp(1.25rem, 5vw, 2rem);
+		color: var(--color-slate-600);
+		font-size: clamp(1.125rem, 4.5vw, 1.75rem);
 		font-variant-numeric: tabular-nums;
 		font-weight: 500;
+		line-height: 1;
 		user-select: none;
 	}
 
 	.cell-input {
 		background: transparent;
 		border: none;
-		caret-color: #4f46e5;
-		color: #4f46e5;
-		font-size: clamp(1.25rem, 5vw, 2rem);
+		caret-color: var(--color-primary-500);
+		color: var(--color-primary-600);
+		font-size: clamp(1.125rem, 4.5vw, 1.75rem);
 		font-variant-numeric: tabular-nums;
-		font-weight: 500;
+		font-weight: 600;
 		height: 100%;
+		line-height: 1;
 		outline: none;
 		text-align: center;
+		transition: background var(--duration-fast) var(--ease-out);
 		width: 100%;
 	}
 
 	.cell-input:focus {
-		background: #eef2ff;
+		background: var(--color-primary-50);
 	}
 
 	.cell-input::placeholder {
-		color: #cbd5e1;
+		color: var(--color-slate-300);
+	}
+
+	.cell-input::selection {
+		background: var(--color-primary-100);
 	}
 </style>

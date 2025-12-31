@@ -15,12 +15,6 @@ export {
 	type SudokuPuzzle
 } from './sudoku';
 
-export {
-	generateProof,
-	parseProof,
-	serializeProof,
-	verifyProof,
-	type ZkProof
-} from './zk';
+export { generateProof, parseProof, serializeProof, verifyProof, type ZkProof } from './zk';
 
 export { downloadFile } from './download';
