@@ -1,57 +1,66 @@
 import init, {
-	Difficulty as SodoDifficulty,
-	generateSudoku as sodoGenerate,
-	validateSolution as sodoValidate
+	Difficulty as WasmDifficulty,
+	generateSudoku as wasmGenerateSudoku,
+	validateSolution as wasmValidateSolution
 } from '@pyroth/sodo';
 
-export type Grid = number[][];
-export type Difficulty = 'easy' | 'medium' | 'hard' | 'expert';
+export const BOX_SIZE = 3;
+export const CELL_MAX = 9;
+export const CELL_MIN = 0;
+export const GRID_SIZE = 9;
 
-const DIFFICULTY_MAP: Record<Difficulty, SodoDifficulty> = {
-	easy: SodoDifficulty.Easy,
-	medium: SodoDifficulty.Medium,
-	hard: SodoDifficulty.Hard,
-	expert: SodoDifficulty.Expert
+export type DifficultyLevel = 'easy' | 'expert' | 'hard' | 'medium';
+export type SudokuGrid = number[][];
+
+export interface SudokuPuzzle {
+	puzzle: SudokuGrid;
+	solution: SudokuGrid;
+}
+
+const DIFFICULTY_MAP: Record<DifficultyLevel, WasmDifficulty> = {
+	easy: WasmDifficulty.Easy,
+	expert: WasmDifficulty.Expert,
+	hard: WasmDifficulty.Hard,
+	medium: WasmDifficulty.Medium
 };
 
-let initPromise: Promise<unknown> | null = null;
+let wasmInitPromise: Promise<unknown> | null = null;
 
-const ensureInit = () => (initPromise ??= init());
+const ensureWasmInitialized = (): Promise<unknown> => (wasmInitPromise ??= init());
 
-export const createEmptyGrid = (): Grid =>
-	Array.from({ length: 9 }, () => Array<number>(9).fill(0));
+const isValidCellValue = (value: unknown): value is number =>
+	typeof value === 'number' && value >= CELL_MIN && value <= CELL_MAX;
 
-export const cloneGrid = (grid: Grid): Grid => grid.map((row) => [...row]);
+const isValidSudokuGrid = (value: unknown): value is SudokuGrid =>
+	Array.isArray(value) &&
+	value.length === GRID_SIZE &&
+	value.every((row) => Array.isArray(row) && row.length === GRID_SIZE && row.every(isValidCellValue));
 
-export const generateSudoku = async (
-	difficulty: Difficulty = 'medium'
-): Promise<{ puzzle: Grid; solution: Grid }> => {
-	await ensureInit();
-	return sodoGenerate(DIFFICULTY_MAP[difficulty]);
+export const cloneGrid = (grid: SudokuGrid): SudokuGrid => grid.map((row) => [...row]);
+
+export const createEmptyGrid = (): SudokuGrid =>
+	Array.from({ length: GRID_SIZE }, () => Array<number>(GRID_SIZE).fill(CELL_MIN));
+
+export const generateSudoku = async (difficulty: DifficultyLevel = 'medium'): Promise<SudokuPuzzle> => {
+	await ensureWasmInitialized();
+	return wasmGenerateSudoku(DIFFICULTY_MAP[difficulty]);
 };
 
-export const validateSolution = async (puzzle: Grid, solution: Grid): Promise<boolean> => {
-	await ensureInit();
-	return sodoValidate(puzzle, solution);
-};
+export const isGridEmpty = (grid: SudokuGrid): boolean =>
+	grid.every((row) => row.every((cell) => cell === CELL_MIN));
 
-export const gridToJson = (grid: Grid): string => JSON.stringify(grid, null, 2);
-
-const isValidCell = (v: unknown): v is number => typeof v === 'number' && v >= 0 && v <= 9;
-
-const isGrid = (v: unknown): v is Grid =>
-	Array.isArray(v) &&
-	v.length === 9 &&
-	v.every((row) => Array.isArray(row) && row.length === 9 && row.every(isValidCell));
-
-export const jsonToGrid = (json: string): Grid | null => {
+export const parseGrid = (json: string): SudokuGrid | null => {
 	try {
 		const parsed: unknown = JSON.parse(json);
-		return isGrid(parsed) ? parsed : null;
+		return isValidSudokuGrid(parsed) ? parsed : null;
 	} catch {
 		return null;
 	}
 };
 
-export const isEmptyGrid = (grid: Grid): boolean =>
-	grid.every((row) => row.every((cell) => cell === 0));
+export const serializeGrid = (grid: SudokuGrid): string => JSON.stringify(grid, null, 2);
+
+export const validateSolution = async (puzzle: SudokuGrid, solution: SudokuGrid): Promise<boolean> => {
+	await ensureWasmInitialized();
+	return wasmValidateSolution(puzzle, solution);
+};

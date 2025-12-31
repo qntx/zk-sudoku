@@ -1,4 +1,4 @@
-# zk-sodo
+# ZK Sudoku
 
 Sudoku verification using ZK-SNARKs.
 
