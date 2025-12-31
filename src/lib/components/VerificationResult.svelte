@@ -18,49 +18,39 @@
 </script>
 
 <div class="verify-result" class:valid={isValid} class:invalid={!isValid}>
-	<div class="result-badge">
-		<div class="badge-icon">
-			{#if isValid}
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-				>
-					<polyline points="20 6 9 17 4 12"></polyline>
-				</svg>
-			{:else}
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-				>
-					<line x1="18" y1="6" x2="6" y2="18"></line>
-					<line x1="6" y1="6" x2="18" y2="18"></line>
-				</svg>
-			{/if}
-		</div>
-		<div class="badge-ring"></div>
+	<div class="result-icon">
+		{#if isValid}
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2.5"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			>
+				<polyline points="20 6 9 17 4 12"></polyline>
+			</svg>
+		{:else}
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2.5"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			>
+				<line x1="18" y1="6" x2="6" y2="18"></line>
+				<line x1="6" y1="6" x2="18" y2="18"></line>
+			</svg>
+		{/if}
 	</div>
 	<h3 class="result-title">{config.title}</h3>
 	<p class="result-desc">{config.description}</p>
 	<div class="result-meta">
-		<div class="meta-item">
-			<span class="meta-label">Protocol</span>
-			<span class="meta-value">Groth16</span>
-		</div>
-		<div class="meta-divider"></div>
-		<div class="meta-item">
-			<span class="meta-label">Curve</span>
-			<span class="meta-value">BN128</span>
-		</div>
+		<span class="meta-tag">Groth16</span>
+		<span class="meta-tag">BN128</span>
 	</div>
 </div>
 
@@ -68,140 +58,103 @@
 	.verify-result {
 		align-items: center;
 		animation: scaleIn var(--duration-slow) var(--ease-spring);
-		border-radius: var(--radius-lg);
+		border-radius: var(--radius-xl);
 		display: flex;
 		flex: 1;
 		flex-direction: column;
 		justify-content: center;
 		margin-top: var(--space-3);
 		min-height: 0;
-		overflow: hidden;
-		padding: var(--space-4);
+		padding: var(--space-5);
 		text-align: center;
 	}
 
 	.verify-result.valid {
-		background: linear-gradient(160deg, var(--color-success-50) 0%, var(--color-success-100) 100%);
-		border: 1px solid var(--color-success-400);
-		box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+		background: linear-gradient(145deg, #f0fdf4 0%, #dcfce7 100%);
+		border: 1px solid #86efac;
 	}
 
 	.verify-result.invalid {
-		background: linear-gradient(160deg, var(--color-error-50) 0%, var(--color-error-100) 100%);
-		border: 1px solid var(--color-error-400);
-		box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+		background: linear-gradient(145deg, var(--color-primary-50) 0%, var(--color-primary-100) 100%);
+		border: 1px solid var(--color-primary-200);
 	}
 
-	.result-badge {
-		animation: scaleIn var(--duration-slow) var(--ease-spring) 100ms backwards;
-		margin-bottom: var(--space-2);
-		position: relative;
-	}
-
-	.badge-icon {
+	.result-icon {
 		align-items: center;
+		animation: scaleIn var(--duration-slow) var(--ease-spring) 80ms backwards;
 		border-radius: var(--radius-full);
 		display: flex;
-		height: 44px;
+		height: 48px;
 		justify-content: center;
-		position: relative;
-		width: 44px;
-		z-index: 1;
+		margin-bottom: var(--space-3);
+		width: 48px;
 	}
 
-	.verify-result.valid .badge-icon {
-		background: var(--gradient-success);
-		box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+	.verify-result.valid .result-icon {
+		background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+		box-shadow: 0 6px 16px rgba(34, 197, 94, 0.35);
 		color: white;
 	}
 
-	.verify-result.invalid .badge-icon {
-		background: linear-gradient(135deg, var(--color-error-400) 0%, var(--color-error-600) 100%);
-		box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4);
+	.verify-result.invalid .result-icon {
+		background: linear-gradient(135deg, var(--color-primary-400) 0%, var(--color-primary-500) 100%);
+		box-shadow: 0 6px 16px rgba(238, 76, 44, 0.3);
 		color: white;
 	}
 
-	.badge-icon svg {
-		height: 22px;
-		width: 22px;
-	}
-
-	.badge-ring {
-		animation: pulse 2s ease-in-out infinite;
-		border-radius: var(--radius-full);
-		inset: -5px;
-		opacity: 0.4;
-		position: absolute;
-	}
-
-	.verify-result.valid .badge-ring {
-		border: 2px solid var(--color-success-500);
-	}
-
-	.verify-result.invalid .badge-ring {
-		border: 2px solid var(--color-error-500);
+	.result-icon svg {
+		height: 24px;
+		width: 24px;
 	}
 
 	.result-title {
-		animation: slideUp var(--duration-normal) var(--ease-out) 150ms backwards;
-		font-size: 1rem;
-		font-weight: 700;
-		letter-spacing: -0.01em;
+		animation: slideUp var(--duration-normal) var(--ease-out) 120ms backwards;
+		font-size: 1.125rem;
+		font-weight: 600;
+		letter-spacing: -0.02em;
 		margin: 0 0 var(--space-1);
 	}
 
 	.verify-result.valid .result-title {
-		color: var(--color-success-700);
+		color: #166534;
 	}
 
 	.verify-result.invalid .result-title {
-		color: var(--color-error-700);
+		color: var(--color-primary-700);
 	}
 
 	.result-desc {
-		animation: slideUp var(--duration-normal) var(--ease-out) 200ms backwards;
+		animation: slideUp var(--duration-normal) var(--ease-out) 160ms backwards;
 		color: var(--color-slate-500);
-		font-size: 0.75rem;
-		line-height: 1.4;
-		margin: 0 0 var(--space-3);
-		max-width: 220px;
+		font-size: 0.8125rem;
+		line-height: 1.5;
+		margin: 0 0 var(--space-4);
+		max-width: 240px;
 	}
 
 	.result-meta {
-		align-items: center;
-		animation: slideUp var(--duration-normal) var(--ease-out) 250ms backwards;
-		backdrop-filter: blur(8px);
-		background: rgba(255, 255, 255, 0.7);
-		border-radius: var(--radius-sm);
+		animation: slideUp var(--duration-normal) var(--ease-out) 200ms backwards;
 		display: flex;
-		gap: var(--space-3);
-		padding: var(--space-2) var(--space-3);
+		gap: var(--space-2);
 	}
 
-	.meta-item {
-		display: flex;
-		flex-direction: column;
-		gap: 2px;
-	}
-
-	.meta-label {
-		color: var(--color-slate-400);
-		font-size: 0.625rem;
-		font-weight: 600;
-		letter-spacing: 0.05em;
-		text-transform: uppercase;
-	}
-
-	.meta-value {
-		color: var(--color-slate-700);
+	.meta-tag {
+		background: rgba(255, 255, 255, 0.8);
+		border-radius: var(--radius-full);
+		color: var(--color-slate-600);
 		font-family: var(--font-mono);
-		font-size: 0.75rem;
-		font-weight: 600;
+		font-size: 0.6875rem;
+		font-weight: 500;
+		padding: var(--space-1) var(--space-3);
 	}
 
-	.meta-divider {
-		background: var(--color-slate-200);
-		height: 24px;
-		width: 1px;
+	.verify-result.valid .meta-tag {
+		background: rgba(255, 255, 255, 0.9);
+		border: 1px solid #bbf7d0;
+	}
+
+	.verify-result.invalid .meta-tag {
+		background: rgba(255, 255, 255, 0.9);
+		border: 1px solid var(--color-primary-200);
 	}
 </style>
