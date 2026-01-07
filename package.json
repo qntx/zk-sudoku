@@ -5,7 +5,7 @@
 		"@eslint/compat": "^2.0.0",
 		"@eslint/js": "^9.39.1",
 		"@sveltejs/adapter-static": "^3.0.10",
-		"@sveltejs/kit": "^2.49.1",
+		"@sveltejs/kit": "^2.49.3",
 		"@sveltejs/vite-plugin-svelte": "^6.2.1",
 		"@tailwindcss/typography": "^0.5.19",
 		"@tailwindcss/vite": "^4.1.17",
